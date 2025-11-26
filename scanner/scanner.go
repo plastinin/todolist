@@ -10,14 +10,14 @@ import (
 )
 
 type Scanner struct {
-	TaskManager *task.TaskManager
+	TaskManager  *task.TaskManager
 	EventManager *events.EventManager
 }
 
 func NewScanner(TaskManager *task.TaskManager, EventManager *events.EventManager) *Scanner {
 	return &Scanner{
-		TaskManager: TaskManager,
-		EventManager: EventManager,	
+		TaskManager:  TaskManager,
+		EventManager: EventManager,
 	}
 }
 
@@ -28,9 +28,9 @@ func (sc *Scanner) Start() {
 
 	for {
 		printEnterComand()
-		
+
 		if ok := scanner.Scan(); !ok {
-			printError(errorInput)
+			printError(ErrInput)
 			continue
 		}
 
@@ -38,7 +38,7 @@ func (sc *Scanner) Start() {
 		commands := strings.SplitN(command, " ", 3)
 
 		if len(commands) == 0 {
-			printError(errorInput)
+			printError(ErrInput)
 			continue
 		}
 
@@ -46,7 +46,7 @@ func (sc *Scanner) Start() {
 		case "/help":
 			printHelp()
 		case "/add":
-			sc.TaskManager.Add(commands[1], commands[2])
+			sc.TaskManager.AddTask(commands[1], commands[2])
 			fmt.Println("Done.")
 		case "/list":
 			sc.TaskManager.PrintLn()
@@ -54,16 +54,15 @@ func (sc *Scanner) Start() {
 			sc.TaskManager.Delete(commands[1])
 			fmt.Println("Done.")
 		case "/done":
-			sc.TaskManager.DoneTask(commands[1])
+			sc.TaskManager.CompleteTask(commands[1])
 			fmt.Println("Done.")
 		case "/events":
 			sc.EventManager.Println()
 		case "/exit":
 			return
 		default:
-			printError(errorNoComand)
+			printError(ErrInput)
 		}
 		sc.EventManager.Add(command, "")
 	}
 }
-

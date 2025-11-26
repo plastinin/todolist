@@ -16,18 +16,40 @@ func NewTaskManager() *TaskManager {
 	}
 }
 
-func (tm *TaskManager) Add(title string, description string) {
+func (tm *TaskManager) AddTask(title string, description string) error {
+
+	if _, ok := tm.TaskList[title]; ok {
+		return ErrTaskAlreadyExist
+	}
 	tm.TaskList[title] = NewTask(title, description)
+	return nil
 }
 
-func (tm *TaskManager) Delete(title string) {
+func (tm *TaskManager) Delete(title string) error {
+
+	if _, ok := tm.TaskList[title]; !ok {
+		return ErrTaskNotFound
+	}
+
 	delete(tm.TaskList, title)
+	return nil
 }
 
-func (tm *TaskManager) DoneTask(title string) {
+func (tm *TaskManager) CompleteTask(title string) error {
 	if task, ok := tm.TaskList[title]; ok {
 		task.Complete()
+		return nil
+	} else {
+		return ErrTaskNotFound
 	}
+}
+
+func (tm *TaskManager) ListTasks() map[string]Task {
+	tmp := make(map[string]Task, len(tm.TaskList))
+	for k, v := range tm.TaskList {
+		tmp[k] = *v
+	}
+	return tmp
 }
 
 func (tm *TaskManager) PrintLn() {

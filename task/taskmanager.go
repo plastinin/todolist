@@ -2,12 +2,14 @@ package task
 
 import (
 	"fmt"
+	"sync"
 
 	"github.com/k0kubun/pp"
 )
 
 type TaskManager struct {
 	TaskList map[string]*Task
+	mtx 	sync.RWMutex
 }
 
 func NewTaskManager() *TaskManager {
@@ -16,16 +18,37 @@ func NewTaskManager() *TaskManager {
 	}
 }
 
-func (tm *TaskManager) AddTask(title string, description string) error {
+func (tm *TaskManager) AddTask(title string, description string) (Task, error) {
+
+	tm.mtx.Lock()
+	defer tm.mtx.Unlock()
 
 	if _, ok := tm.TaskList[title]; ok {
-		return ErrTaskAlreadyExist
+		return Task{}, ErrTaskAlreadyExist
 	}
-	tm.TaskList[title] = NewTask(title, description)
-	return nil
+
+	task := NewTask(title, description)
+	tm.TaskList[title] = task
+	return *task, nil
 }
 
+func (tm *TaskManager) GetTask(title string) (Task, error) {
+
+	tm.mtx.RLock()
+	defer tm.mtx.RUnlock()
+
+	task, ok := tm.TaskList[title]
+	if !ok {
+		return Task{}, ErrTaskNotFound
+	}
+	return *task, nil
+}
+
+
 func (tm *TaskManager) Delete(title string) error {
+
+	tm.mtx.Lock()
+	defer tm.mtx.Unlock()
 
 	if _, ok := tm.TaskList[title]; !ok {
 		return ErrTaskNotFound
@@ -35,16 +58,24 @@ func (tm *TaskManager) Delete(title string) error {
 	return nil
 }
 
-func (tm *TaskManager) CompleteTask(title string) error {
+func (tm *TaskManager) CompleteTask(title string) (Task, error) {
+
+	tm.mtx.Lock()
+	defer tm.mtx.Unlock()
+
 	if task, ok := tm.TaskList[title]; ok {
 		task.Complete()
-		return nil
+		return *task, nil
 	} else {
-		return ErrTaskNotFound
+		return Task{}, ErrTaskNotFound
 	}
 }
 
 func (tm *TaskManager) ListTasks() map[string]Task {
+
+	tm.mtx.RLock()
+	defer tm.mtx.RUnlock()
+
 	tmp := make(map[string]Task, len(tm.TaskList))
 	for k, v := range tm.TaskList {
 		tmp[k] = *v
@@ -52,7 +83,11 @@ func (tm *TaskManager) ListTasks() map[string]Task {
 	return tmp
 }
 
-func (tm *TaskManager) ListNotCompletedTasks() map[string]Task {
+func (tm *TaskManager) ListUncompletedTasks() map[string]Task {
+
+	tm.mtx.RLock()
+	defer tm.mtx.RUnlock()
+
 	tmp := make(map[string]Task)
 	for k, v := range tm.TaskList {
 		if v.Completed {

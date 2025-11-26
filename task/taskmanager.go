@@ -52,6 +52,16 @@ func (tm *TaskManager) ListTasks() map[string]Task {
 	return tmp
 }
 
+func (tm *TaskManager) ListNotCompletedTasks() map[string]Task {
+	tmp := make(map[string]Task, len(tm.TaskList))
+	for k, v := range tm.TaskList {
+		if v.Completed {
+			tmp[k] = *v
+		}
+	}
+	return tmp
+}
+
 func (tm *TaskManager) PrintLn() {
 
 	if len(tm.TaskList) == 0 {

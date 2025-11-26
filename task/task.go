@@ -7,23 +7,23 @@ import (
 type Task struct {
 	Title       string
 	Description string
-	TimeStart   time.Time
-	IsDone        bool
-	TimeEnd     *time.Time
+	StartAt     time.Time
+	Completed   bool
+	CompletedAt *time.Time
 }
 
 func NewTask(title string, desc string) *Task {
 	return &Task{
-		Title: title,
+		Title:       title,
 		Description: desc,
-		TimeStart: time.Now(),
-		IsDone: false,
-		TimeEnd: nil,
+		StartAt:     time.Now(),
+		Completed:   false,
+		CompletedAt: nil,
 	}
 }
 
-func (t *Task) Done() {
-	t.IsDone = true
+func (t *Task) Complete() {
+	t.Completed = true
 	now := time.Now()
-	t.TimeEnd = &now
+	t.CompletedAt = &now
 }

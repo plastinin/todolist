@@ -2,7 +2,7 @@ package scanner
 
 import "fmt"
 
-func printAbout(){
+func printAbout() {
 	fmt.Println("Task manager v0.1")
 	fmt.Println("=================\n\n")
 }
@@ -11,7 +11,7 @@ func printEnterComand() {
 	fmt.Println("Enter a command to continue. Hint: /help")
 }
 
-func printHelp(){
+func printHelp() {
 	fmt.Println(`Список команд, которые должны быть доступны в приложении:
 		/help — эта команда позволяет узнать доступные команды и их формат
 		/add {заголовок задачи из одного слова} {текст задачи из одного или нескольких слов} — эта команда позволяет добавлять новые задачи в список задач
@@ -22,6 +22,6 @@ func printHelp(){
 		/exit — эта команда позволяет завершить выполнение программы`)
 }
 
-func printError(errString string) {
-	fmt.Println("Error:", errString)
+func printError(err error) {
+	fmt.Println("Error:", err)
 }

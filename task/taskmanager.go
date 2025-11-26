@@ -26,7 +26,7 @@ func (tm *TaskManager) Delete(title string) {
 
 func (tm *TaskManager) DoneTask(title string) {
 	if task, ok := tm.TaskList[title]; ok {
-		task.Done()
+		task.Complete()
 	}
 }
 

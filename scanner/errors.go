@@ -1,4 +1,6 @@
 package scanner
 
-const errorInput = "Error input. Please try again..."
-const errorNoComand = "No command found. Please try again, or type /help"
+import "errors"
+
+var errorInput = errors.New("Error input. Please try again...")
+var errorNoComand = errors.New("No command found. Please try again, or type /help")
